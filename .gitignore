@@ -1,5 +1,10 @@
 .htaccess
 css.php
+logs/
+datasets/
+assets/
+images/
+mrcnn/
 rpc/
 sites/site*/admin/
 sites/site*/private/
@@ -9,3 +14,4 @@ sites/site*/public/theme/
 textpattern/
 HISTORY.txt
 README.txt
+mask_rcnn_coco.h5
