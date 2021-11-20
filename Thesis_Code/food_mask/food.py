@@ -3,7 +3,7 @@ english_lst = ['Pastizz','Imqaret','Gbejniet','Ghaq Tal-Ghasel','Zalzett Malti',
 foods_list = ['Pastizz','Imqaret','Gbejniet','Ghaq Tal-Ghasel','Zalzett Malti','Qassatat','Coin','Plate']
 food_diction = {'BG': 0,'Pastizz': 1, 'Imqaret': 2, 'Gbejniet': 3, 'Ghaq Tal-Ghasel': 4, 'Zalzett Malti': 5, 'Qassatat': 6, 'Coin': 7, 'Plate': 8}
 
-calorie_per_cm_squared = {'Pastizz': 0, 'Imqaret': 2.690, 'Gbejniet': 8.261, 'Ghaq Tal-Ghasel': 3.567, 'Zalzett Malti': 4.914, 'Qassatat': 0}
+calorie_per_cm_squared = {'Pastizz': 2.227, 'Imqaret': 2.690, 'Gbejniet': 8.261, 'Ghaq Tal-Ghasel': 3.567, 'Zalzett Malti': 4.914, 'Qassatat': 7.702}
 import os
 import sys
 import json
