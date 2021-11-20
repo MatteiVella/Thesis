@@ -18,9 +18,9 @@ def rotate2D(pts, cnt, ang=sc.pi / 4):
 
 
 image = cv2.imread(
-    r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\datasets\MalteseFood_Dataset\train\IMG_7808.JPG')
+    r'/datasets/MalteseFood_Dataset/train/IMG_7808.JPG')
 r = rotate_image(image, -15)
-cv2.imwrite('Test.jpg', r)
+cv2.imwrite('Mask_RCNN/Test.jpg', r)
 
 # 1.) HERE WE ARE GETTING A BR VALUE FROM THE EXPORTED COCO VALUES AND TRANSFORMING THEM INTO A DRAWABLE POLYGON
 
@@ -63,7 +63,7 @@ for z in range(int(no_coords)):
     xy.insert(counter, [temp_x, temp_y])
     counter = counter + 1
 
-image_path = r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\food_mask\Test.JPG'
+image_path = r'/food_mask/Test.jpg'
 image = Image.open(image_path)
 draw = ImageDraw.Draw(image)
 colors = ["red", "green", "blue", "yellow",
