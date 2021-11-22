@@ -2,7 +2,7 @@ import json
 
 # Opening JSON file
 
-f = open('C:/Users/matte/Downloads/MalteseFood_Sample_coco (1).json')
+f = open('C:/Users/matte/Downloads/Testing_Food_coco.json')
 
 # returns JSON object as
 # a dictionary
@@ -58,6 +58,6 @@ for anno in data_set['annotations']:
         )
 
 
-with open('annotation.json', 'w', encoding='utf-8') as f:
+with open('annotation_test.json', 'w', encoding='utf-8') as f:
     json.dump(jsonFile, f, ensure_ascii=False, indent=4)
 #print(jsonFile)

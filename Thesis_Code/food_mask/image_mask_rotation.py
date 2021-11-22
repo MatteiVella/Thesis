@@ -1,9 +1,11 @@
-import random
+import copy
+import json
+import os
 import cv2
+import math as mt
 import numpy as np
 import scipy as sc
-import math as mt
-from PIL import Image, ImageDraw
+import ast
 
 
 def rotate_image(image, angle):
@@ -17,71 +19,97 @@ def rotate2D(pts, cnt, ang=sc.pi / 4):
     return sc.dot(pts - cnt, sc.array([[sc.cos(ang), sc.sin(ang)], [-sc.sin(ang), sc.cos(ang)]])) + cnt
 
 
-image = cv2.imread(
-    r'/datasets/MalteseFood_Dataset/train/IMG_7808.JPG')
-r = rotate_image(image, -15)
-cv2.imwrite('Mask_RCNN/Test.jpg', r)
+def rotateImages(degree, read_path, save_path):
+    included_extensions = ['JPG']
+    file_names = [fn for fn in os.listdir(read_path)
+                  if any(fn.endswith(ext) for ext in included_extensions)]
 
-# 1.) HERE WE ARE GETTING A BR VALUE FROM THE EXPORTED COCO VALUES AND TRANSFORMING THEM INTO A DRAWABLE POLYGON
+    for name in file_names:
+        path = read_path + '\\' + name
+        img = cv2.imread(path)
+        r = rotate_image(img, -degree)
+        name = name.replace('.JPG', '_'+str(degree)+'.JPG')
+        cv2.imwrite(save_path + name, r)
 
-BR = [2258.83, 430, 2258.427, 439.224, 2257.222, 448.377, 2255.224, 457.391, 2252.448, 466.196, 2248.915, 474.726,
-      2244.651, 482.915, 2239.691, 490.702, 2234.07, 498.026, 2227.833, 504.833, 2221.026, 511.07, 2213.702, 516.691,
-      2205.915, 521.651, 2197.726, 525.915, 2189.196, 529.448, 2180.391, 532.224, 2171.377, 534.222, 2162.224, 535.427,
-      2153, 535.83, 2143.776, 535.427, 2134.623, 534.222, 2125.609, 532.224, 2116.804, 529.448, 2108.274, 525.915,
-      2100.085, 521.651, 2092.298, 516.691, 2084.974, 511.07, 2078.167, 504.833, 2071.93, 498.026, 2066.309, 490.702,
-      2061.349, 482.915, 2057.085, 474.726, 2053.552, 466.196, 2050.776, 457.391, 2048.778, 448.377, 2047.573, 439.224,
-      2047.17, 430, 2047.573, 420.776, 2048.778, 411.623, 2050.776, 402.609, 2053.552, 393.804, 2057.085, 385.274,
-      2061.349, 377.085, 2066.309, 369.298, 2071.93, 361.974, 2078.167, 355.167, 2084.974, 348.93, 2092.298, 343.309,
-      2100.085, 338.349, 2108.274, 334.085, 2116.804, 330.552, 2125.609, 327.776, 2134.623, 325.778, 2143.776, 324.573,
-      2153, 324.17, 2162.224, 324.573, 2171.377, 325.778, 2180.391, 327.776, 2189.196, 330.552, 2197.726, 334.085,
-      2205.915, 338.349, 2213.702, 343.309, 2221.026, 348.93, 2227.833, 355.167, 2234.07, 361.974, 2239.691, 369.298,
-      2244.651, 377.085, 2248.915, 385.274, 2252.448, 393.804, 2255.224, 402.609, 2257.222, 411.623, 2258.427, 420.776]
-x = []
-y = []
-xy = []
 
-no_coords = (len(BR) / 2)
+def rotate_boundregions(annotation_path):
+    f = open(annotation_path)
+    data_set = json.load(f)
+    items = {}
+    new_br = {}
+    main_json = {}
+    images = []
+    alltogether = []
+    counter = 0
 
-num = 0
-num2 = 1
-counter = 0
+    # These are just loops in order to build the JSON File
+    for img in data_set:
+        count = 0
+        for anno in data_set[img]:
 
-# HERE WE ARE BUILDING THE BR ARRAY WHICH IS MADE UP OF THIS FORMAT : x1,y1,x2,y2,x3,y3 etc...
-# THIS IS BEING TRANSFORMED INTO THIS FORMAT : (x1,y1),(x2,y2)
+            for a in anno:
 
-for i in range(int(no_coords)):
-    x.insert(counter, BR[num])
-    y.insert(counter, BR[num2])
-    num = num + 2
-    num2 = num2 + 2
-    counter = counter + 1
+                BR = anno[a].get('BR')
+                x = []
+                y = []
+                xy = []
 
-counter = 0
-for z in range(int(no_coords)):
-    temp_x = x[counter]
-    temp_y = y[counter]
-    xy.insert(counter, [temp_x, temp_y])
-    counter = counter + 1
+                no_coords = (len(BR) / 2)
 
-image_path = r'/food_mask/Test.jpg'
-image = Image.open(image_path)
-draw = ImageDraw.Draw(image)
-colors = ["red", "green", "blue", "yellow",
-          "purple", "orange"]
+                num = 0
+                num2 = 1
+                counter = 0
 
-# 1.) HERE WE CHECKING IF THE IMAGE IS LANDSCAPE OR PORTRAIT
-# 2.) THEN WE USE THE ROTATE2D METHOD TO GET THE ROTATED VALUES
-# 3.) FINALLY THE RETURN VALUE IS CONVERTED TO A TUPLE.
+                # HERE WE ARE BUILDING THE BR ARRAY WHICH IS MADE UP OF THIS FORMAT : x1,y1,x2,y2,x3,y3 etc...
+                # THIS IS BEING TRANSFORMED INTO THIS FORMAT : (x1,y1),(x2,y2)
 
-angle_degrees = 15
-radian = mt.radians(angle_degrees)
+                for i in range(int(no_coords)):
+                    x.insert(counter, BR[num])
+                    y.insert(counter, BR[num2])
+                    num = num + 2
+                    num2 = num2 + 2
+                    counter = counter + 1
 
-w, h = image.size
-if (w < h):
-    ots = rotate2D(xy, sc.array([1224, 1632]), radian)
-else:
-    ots = rotate2D(xy, sc.array([1632, 1224]), radian)
+                counter = 0
+                for z in range(int(no_coords)):
+                    temp_x = x[counter]
+                    temp_y = y[counter]
+                    xy.insert(counter, [temp_x, temp_y])
+                    counter = counter + 1
 
-ots_tuple = tuple(map(tuple, ots))
-draw.polygon(ots_tuple, fill=random.choice(colors))
-image.show()
+                angle_degrees = 15
+                radian = mt.radians(angle_degrees)
+                ots = rotate2D(xy, sc.array([1224, 1632]), radian)
+                ots_tuple = tuple(map(tuple, ots))
+                new_br['BR'] = ots.tolist()
+
+                # GETTING THE LIST OF BR'S IN THE CORRECT FORMAT
+                str_new_br = str(new_br['BR']).replace('[', '').replace(']', '')
+                str_new_br = '['+ str_new_br + ']'
+                list_new_br = ast.literal_eval(str_new_br)
+
+                items[str(a)] = copy.deepcopy(list_new_br)
+                alltogether.insert(count, items)
+
+                count = count+1
+                items = {}
+
+        main_json[img] = alltogether
+        alltogether = []
+
+    with open('annotation_rotated_masks.json', 'w', encoding='utf-8') as f:
+        json.dump(main_json, f, ensure_ascii=False, indent=4)
+
+
+# Example of how to use the methods
+
+rotateImages(
+    40,
+    r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\datasets\MalteseFood_Dataset\train',
+    r'C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset/augmentations/'
+)
+rotate_boundregions(
+    r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\datasets\MalteseFood_Dataset\train\annotation.json'
+)
+
+
