@@ -20,24 +20,20 @@ def rotate2D(pts, cnt, ang=sc.pi / 4):
 
 
 image = cv2.imread(
-    r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\datasets\MalteseFood_Dataset\train\IMG_7808.JPG')
-r = rotate_image(image, -15)
+    r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\datasets\MalteseFood_Dataset\train\IMG_7821_60.JPG')
+r = rotate_image(image, 0)
 cv2.imwrite('Mask_RCNN/Test.jpg', r)
 
 # 1.) HERE WE ARE GETTING A BR VALUE FROM THE EXPORTED COCO VALUES AND TRANSFORMING THEM INTO A DRAWABLE POLYGON
 
-BR = [2258.83, 430, 2258.427, 439.224, 2257.222, 448.377, 2255.224, 457.391, 2252.448, 466.196, 2248.915, 474.726,
-      2244.651, 482.915, 2239.691, 490.702, 2234.07, 498.026, 2227.833, 504.833, 2221.026, 511.07, 2213.702, 516.691,
-      2205.915, 521.651, 2197.726, 525.915, 2189.196, 529.448, 2180.391, 532.224, 2171.377, 534.222, 2162.224, 535.427,
-      2153, 535.83, 2143.776, 535.427, 2134.623, 534.222, 2125.609, 532.224, 2116.804, 529.448, 2108.274, 525.915,
-      2100.085, 521.651, 2092.298, 516.691, 2084.974, 511.07, 2078.167, 504.833, 2071.93, 498.026, 2066.309, 490.702,
-      2061.349, 482.915, 2057.085, 474.726, 2053.552, 466.196, 2050.776, 457.391, 2048.778, 448.377, 2047.573, 439.224,
-      2047.17, 430, 2047.573, 420.776, 2048.778, 411.623, 2050.776, 402.609, 2053.552, 393.804, 2057.085, 385.274,
-      2061.349, 377.085, 2066.309, 369.298, 2071.93, 361.974, 2078.167, 355.167, 2084.974, 348.93, 2092.298, 343.309,
-      2100.085, 338.349, 2108.274, 334.085, 2116.804, 330.552, 2125.609, 327.776, 2134.623, 325.778, 2143.776, 324.573,
-      2153, 324.17, 2162.224, 324.573, 2171.377, 325.778, 2180.391, 327.776, 2189.196, 330.552, 2197.726, 334.085,
-      2205.915, 338.349, 2213.702, 343.309, 2221.026, 348.93, 2227.833, 355.167, 2234.07, 361.974, 2239.691, 369.298,
-      2244.651, 377.085, 2248.915, 385.274, 2252.448, 393.804, 2255.224, 402.609, 2257.222, 411.623, 2258.427, 420.776]
+BR = [ 1352, 1347, 1477, 1203, 1570, 1154, 1586, 1146, 1613, 1099, 1650,
+            1066, 1697, 1051, 1730, 1049, 1765, 1064, 1837, 1099, 1893, 1117,
+            1930, 1133, 2028, 1220, 2092, 1253, 2119, 1282, 2123, 1335, 2123,
+            1493, 2107, 1631, 2121, 1689, 2127, 1722, 2127, 1749, 2111, 1775,
+            2076, 1798, 2043, 1821, 1995, 1866, 1946, 1911, 1948, 1930, 1946,
+            1944, 1921, 1960, 1882, 1977, 1781, 2006, 1747, 2032, 1707, 2043,
+            1664, 2026, 1446, 1913, 1378, 1860, 1323, 1798, 1298, 1763, 1282,
+            1703, 1292, 1574, 1302, 1506, 1319, 1483, 1317, 1426, 1329, 1378]
 x = []
 y = []
 xy = []
@@ -65,7 +61,7 @@ for z in range(int(no_coords)):
     xy.insert(counter, [temp_x, temp_y])
     counter = counter + 1
 
-image_path = r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\food_mask\Test.jpg'
+image_path = r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\food_mask\Mask_RCNN\Test.jpg'
 image = Image.open(image_path)
 draw = ImageDraw.Draw(image)
 colors = ["red", "green", "blue", "yellow",
@@ -75,7 +71,7 @@ colors = ["red", "green", "blue", "yellow",
 # 2.) THEN WE USE THE ROTATE2D METHOD TO GET THE ROTATED VALUES
 # 3.) FINALLY THE RETURN VALUE IS CONVERTED TO A TUPLE.
 
-angle_degrees = 15
+angle_degrees = 60
 radian = mt.radians(angle_degrees)
 
 w, h = image.size
@@ -84,6 +80,6 @@ if (w < h):
 else:
     ots = rotate2D(xy, sc.array([1632, 1224]), radian)
 
-ots_tuple = tuple(map(tuple, ots))
+ots_tuple = tuple(map(tuple, np.around(ots)))
 draw.polygon(ots_tuple, fill=random.choice(colors))
 image.show()

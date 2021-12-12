@@ -6,6 +6,7 @@ import math as mt
 import numpy as np
 import scipy as sc
 import ast
+import glob
 
 
 def rotate_image(image, angle):
@@ -32,7 +33,7 @@ def rotateImages(degree, read_path, save_path):
         cv2.imwrite(save_path + name, r)
 
 
-def rotate_boundregions(annotation_path):
+def rotate_boundregions(annotation_path, degree_angle):
     f = open(annotation_path)
     data_set = json.load(f)
     items = {}
@@ -77,9 +78,9 @@ def rotate_boundregions(annotation_path):
                     xy.insert(counter, [temp_x, temp_y])
                     counter = counter + 1
 
-                angle_degrees = 15
+                angle_degrees = degree_angle
                 radian = mt.radians(angle_degrees)
-                ots = rotate2D(xy, sc.array([1224, 1632]), radian)
+                ots = np.around(rotate2D(xy, sc.array([1224, 1632]), radian))
                 ots_tuple = tuple(map(tuple, ots))
                 new_br['BR'] = ots.tolist()
 
@@ -87,29 +88,49 @@ def rotate_boundregions(annotation_path):
                 str_new_br = str(new_br['BR']).replace('[', '').replace(']', '')
                 str_new_br = '['+ str_new_br + ']'
                 list_new_br = ast.literal_eval(str_new_br)
-
-                items[str(a)] = copy.deepcopy(list_new_br)
+                new_br['BR'] = list_new_br
+                items[str(a)] = copy.deepcopy(new_br)
                 alltogether.insert(count, items)
 
                 count = count+1
                 items = {}
 
-        main_json[img] = alltogether
+        main_json[img+'_'+str(degree_angle)] = alltogether
         alltogether = []
 
-    with open('annotation_rotated_masks.json', 'w', encoding='utf-8') as f:
+    with open('C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset/augmentations/annotation_rotated_masks_'+str(degree_angle)+'.json', 'w', encoding='utf-8') as f:
         json.dump(main_json, f, ensure_ascii=False, indent=4)
+
+
+def mergeAnnotationFiles(annotationspath):
+    # Give path of folder where all annotation files are found
+    # EXAMPLE : C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset/augmentations/
+    result = []
+    for f in glob.glob(annotationspath+"*.json"):
+        with open(f, "rb") as infile:
+            result.append(json.load(infile))
+
+    with open('C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset/train/'+"annotation.json"
+            , "w", encoding='utf-8') as outfile:
+        json.dump(result, outfile)
 
 
 # Example of how to use the methods
 
-rotateImages(
-    40,
-    r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\datasets\MalteseFood_Dataset\train',
-    r'C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset/augmentations/'
-)
-rotate_boundregions(
-    r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\datasets\MalteseFood_Dataset\train\annotation.json'
-)
+degree = 15
+#for x in range(1, 23):
+#    rotateImages(
+#        x*degree,
+#        r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\datasets\MalteseFood_Dataset\train',
+#        r'C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset/augmentations/'
+#    )
+
+for x in range(1, 23):
+    rotate_boundregions(
+        r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\datasets\MalteseFood_Dataset\augmentations\annotation.json',
+        x*degree
+    )
+
+mergeAnnotationFiles('C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset/augmentations/')
 
 
