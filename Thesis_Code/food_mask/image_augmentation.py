@@ -27,14 +27,9 @@ for x in range(1, 42):
     # expand dimension to one sample
     samples = expand_dims(data, 0)
     # create image data augmentation generator
-    datagen = ImageDataGenerator(rotation_range=30,
-                                 width_shift_range=0.1,
-                                 height_shift_range=0.1,
-                                 shear_range=0.2,
-                                 zoom_range=0.1,
-                                 horizontal_flip=True,
-                                 vertical_flip=True,
-                                 fill_mode='nearest',
+    datagen = ImageDataGenerator(
+                                 horizontal_flip=False,
+                                 vertical_flip=False,
                                  brightness_range=[0.3, 2.0])
     # prepare iterator
     it = datagen.flow(samples, batch_size=1)

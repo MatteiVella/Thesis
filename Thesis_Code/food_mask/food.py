@@ -1,7 +1,7 @@
 
-english_lst = ['Pastizz','Imqaret','Gbejniet','Ghaq Tal-Ghasel','Zalzett Malti','Qassatat','Coin','Plate']
-foods_list = ['Pastizz','Imqaret','Gbejniet','Ghaq Tal-Ghasel','Zalzett Malti','Qassatat','Coin','Plate']
-food_diction = {'BG': 0,'Pastizz': 1, 'Imqaret': 2, 'Gbejniet': 3, 'Ghaq Tal-Ghasel': 4, 'Zalzett Malti': 5, 'Qassatat': 6, 'Coin': 7, 'Plate': 8}
+english_lst = ['Pastizz','Imqaret','Gbejniet','Ghaq Tal-Ghasel','Zalzett Malti','Qassatat','Coin']
+foods_list = ['Pastizz','Imqaret','Gbejniet','Ghaq Tal-Ghasel','Zalzett Malti','Qassatat','Coin']
+food_diction = {'BG': 0,'Pastizz': 1, 'Imqaret': 2, 'Gbejniet': 3, 'Ghaq Tal-Ghasel': 4, 'Zalzett Malti': 5, 'Qassatat': 6, 'Coin': 7}
 
 calorie_per_cm_squared = {'Pastizz': 2.227, 'Imqaret': 2.690, 'Gbejniet': 8.261, 'Ghaq Tal-Ghasel': 3.567, 'Zalzett Malti': 4.914, 'Qassatat': 7.702}
 import os
@@ -36,7 +36,7 @@ class FoodConfig(Config):
     IMAGES_PER_GPU = 2
 
     # Number of classes (including background)
-    NUM_CLASSES = 1 + 8  # background + 1 foods
+    NUM_CLASSES = 1 + 7  # background + 1 foods
 
     # Using  smaller anchors because our foods are quite small objects 
     RPN_ANCHOR_SCALES = (4, 8, 16, 32, 64)  # anchor side in pixels
@@ -65,7 +65,7 @@ class FoodDataset(utils.Dataset):
             self.add_class("food", n + 1, i)
 
         # Train or validation dataset?
-        assert subset in ["train", "val"]
+        assert subset in ["train", "test"]
         dataset_dir = os.path.join(dataset_dir, subset)
         annotations = json.load(open(os.path.join(dataset_dir, "annotation.json")))
         # Add images

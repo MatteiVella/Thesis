@@ -1,0 +1,14 @@
+ - Take Photos and put them in the original folder
+ - Resize the images and put them into the resized folder
+ - Annotate the images, Export the file as coco
+ - Run the json_formatter script
+ - Run the test_train_split to generate 3 configuration folders. Inside of each there will be images split into 70/30
+ - Run the json_formatter_differentconfigs to generate the annotation files for each folder.]
+ - Add the horizontal image names in the array in the image_mask_rotation script
+ - Run the image_mask_rotation script to rotate the images, rotate the mask's co-ords and finally merges all the seperate annotations scripts.
+ - Open Each merged annotation file and search for this, replace it with ",":
+	"
+	  },
+	  { "
+ - Dont forget to include the original annotation file + the original photos
+ - Delete all the extra annotation files after you create the merged ones

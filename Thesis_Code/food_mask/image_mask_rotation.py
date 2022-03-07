@@ -8,6 +8,8 @@ import scipy as sc
 import ast
 import glob
 
+horizontal_images = ['IMG_8688', 'IMG_8745', 'IMG_8747', 'IMG_8751', 'IMG_8753', 'IMG_8757', 'IMG_8760', 'IMG_8761',
+                     'IMG_8768', 'IMG_8770', 'IMG_8775', 'IMG_8776']
 
 def rotate_image(image, angle):
     image_center = tuple(np.array(image.shape[1::-1]) / 2)
@@ -33,7 +35,7 @@ def rotateImages(degree, read_path, save_path):
         cv2.imwrite(save_path + name, r)
 
 
-def rotate_boundregions(annotation_path, degree_angle):
+def rotate_boundregions(annotation_path,saving_path, degree_angle):
     f = open(annotation_path)
     data_set = json.load(f)
     items = {}
@@ -80,7 +82,10 @@ def rotate_boundregions(annotation_path, degree_angle):
 
                 angle_degrees = degree_angle
                 radian = mt.radians(angle_degrees)
-                ots = np.around(rotate2D(xy, sc.array([1224, 1632]), radian))
+                if img in horizontal_images:
+                    ots = np.around(rotate2D(xy, sc.array([1632, 1224]), radian))
+                else:
+                    ots = np.around(rotate2D(xy, sc.array([1224, 1632]), radian))
                 ots_tuple = tuple(map(tuple, ots))
                 new_br['BR'] = ots.tolist()
 
@@ -98,7 +103,7 @@ def rotate_boundregions(annotation_path, degree_angle):
         main_json[img+'_'+str(degree_angle)] = alltogether
         alltogether = []
 
-    with open('C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset/augmentations/annotation_rotated_masks_'+str(degree_angle)+'.json', 'w', encoding='utf-8') as f:
+    with open(saving_path+str(degree_angle)+'.json', 'w', encoding='utf-8') as f:
         json.dump(main_json, f, ensure_ascii=False, indent=4)
 
 
@@ -110,8 +115,7 @@ def mergeAnnotationFiles(annotationspath):
         with open(f, "rb") as infile:
             result.append(json.load(infile))
 
-    with open('C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset/train/'+"annotation.json"
-            , "w", encoding='utf-8') as outfile:
+    with open(annotationspath+"annotation_final.json", "w", encoding='utf-8') as outfile:
         json.dump(result, outfile)
 
 
@@ -121,16 +125,17 @@ degree = 15
 #for x in range(1, 23):
 #    rotateImages(
 #        x*degree,
-#        r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\datasets\MalteseFood_Dataset\train',
-#        r'C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset/augmentations/'
+#        r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\datasets\MalteseFood_Dataset_Final\resized\combined\Config3\test',
+#        r'C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset_Final/augmented/Config3/test/'
 #    )
 
-for x in range(1, 23):
-    rotate_boundregions(
-        r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\datasets\MalteseFood_Dataset\augmentations\annotation.json',
-        x*degree
-    )
+#for x in range(1, 23):
+#    rotate_boundregions(
+#        annotation_path=r'C:\Users\matte\OneDrive\Desktop\Thesis\Thesis_Code\datasets\MalteseFood_Dataset_Final\resized\combined\Config3\test\annotation.json',
+#        saving_path='C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset_Final/augmented/Config3/test/annotation_rotated_masks_',
+#        degree_angle=x*degree
+#    )
 
-mergeAnnotationFiles('C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset/augmentations/')
+mergeAnnotationFiles('C:/Users/matte/OneDrive/Desktop/Thesis/Thesis_Code/datasets/MalteseFood_Dataset_Final/augmented/Config3/test/')
 
 
